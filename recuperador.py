@@ -69,7 +69,7 @@ csvFile.close()
 """ 
 
 
-file = open("diccionario_usuarios.txt","a") 
+dicc_usuarios = open("diccionario_usuarios.txt","a") 
  
 screen_name = "asd"
 
@@ -82,8 +82,8 @@ csvWriter.writerow(["id", "favorite count","retweet count","text","created at"])
 max_tweets = 50000
 
 usuario = api.get_user(screen_name = screen_name)
-file.write(screen_name+ " "+usuario.name+ " "+str(usuario.id)+"\n") 
-file.close()
+dicc_usuarios.write(screen_name+ " "+usuario.name+ " "+str(usuario.id)+"\n") 
+dicc_usuarios.close()
 
 #para rescatar info de usuario
 for status in tweepy.Cursor(api.user_timeline, screen_name=screen_name).items(max_tweets):
@@ -111,6 +111,7 @@ class listener(StreamListener):
     def on_error(self, status):
         print status
 #twitterStream = Stream(auth, listener())
-#twitterStream.filter(track=["car"])
+#twitterStream.userstream(usuarios)
+#twitterStream.filter(track=["car"]) #follow=
 
 """

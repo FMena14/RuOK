@@ -90,7 +90,7 @@ for historia_tweets in f:
 					score_tweet[emocion2] == [0]
 
 				#meter lo de la metrica
-				metrica = np.mean(score_tweet[emocion1]) - np.mean(score_tweet[emocion2]) 
+				metrica = np.mean(score_tweet[emocion1]) - np.mean(score_tweet[emocion2]) #promedio o solo suma??
 
 			score_usuario[emocion1].append( metrica )  #cada tweet tiene una metrica
 
