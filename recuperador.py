@@ -9,10 +9,10 @@ from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
 
 #consumer key, consumer secret, access token, access secret.
-ckey="LPG9E2zQHgI9LfYEpffN49u49"
-csecret="Q4QSyKGewE4BNQHMyyroGwjdm6888wpDVgdUVwcD5edP8CRbUS"
-atoken="877580737125507072-3x6CZ4vMpytPL3TZdv9llzPuaVzprqE"
-asecret="0y0uWwNuk9p6vZNrSHwTfoiWQPQp7pgAXMwkaCSdYFcYK"
+ckey="gQ1RX1eqCRS39n1dmL9nVzAEp"
+csecret="iMiZA2xXC4o7TsypLHj22HP1R0SAdfYqxYgFDKU33mra2SGhyA"
+atoken="320425023-iyx7eywe75Po9VtkaOkhcrlhXGFTwzrYYq55xcoH"
+asecret="4GAlKtNyS0Z4SIOdo4DnlFsBl8KlfczOhGy8I4yByF1Tb"
 
 auth = OAuthHandler(ckey, csecret)
 auth.set_access_token(atoken, asecret)
@@ -66,16 +66,12 @@ for status in tweepy.Cursor(api.search, q=query, until ="2017-06-23",
 						#encode('utf-8').strip()])#.encode('utf-8')])
 csvFile.close()
 
-""" 
+"""
 
 
 dicc_usuarios = open("diccionario_usuarios.txt","a") 
  
-<<<<<<< HEAD
-screen_name = "yungjojodeno"
-=======
 screen_name = "LifeSuckSmith"
->>>>>>> e228c01306ecdb424e8cf767336394c2930b7a18
 
 #for ides in ids:
 # formato id usuario
@@ -105,17 +101,3 @@ for status in tweepy.Cursor(api.user_timeline, screen_name=screen_name).items(ma
 
 csvFile.close()
 
-"""
-class listener(StreamListener):
-
-    def on_data(self, data):
-        print(data)
-        return(True)
-
-    def on_error(self, status):
-        print status
-#twitterStream = Stream(auth, listener())
-#twitterStream.userstream(usuarios)
-#twitterStream.filter(track=["car"]) #follow=
-
-"""

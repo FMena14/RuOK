@@ -53,7 +53,7 @@ for (dirpath, dirnames, filenames) in walk(folder):
 csvFile = open('resultados.csv', 'w')
 #Use csv writer
 csvWriter = csv.writer(csvFile,quoting=csv.QUOTE_NONNUMERIC)
-csvWriter.writerow(["screen_name", "sadness score", "disgust score", "anger score", "surprise score", "cantidad tweets"])
+csvWriter.writerow(["screen name", "sadness score", "disgust score", "anger score", "surprise score", "cantidad tweets"])
 
 emociones_contrarias = [["sadness","joy"],["disgust","trust"],["anger","fear"],["surprise","anticipation"]]
 
@@ -91,11 +91,12 @@ for historia_tweets in f:
 					score_tweet[emocion2] = [0.0]
 
 				#meter lo de la metrica
-				metrica = np.mean(score_tweet[emocion1]) - np.mean(score_tweet[emocion2]) #promedio o solo suma??
-
+				delta= np.sum(score_tweet[emocion1]) - np.sum(score_tweet[emocion2])
+				if delta >0:
+					metrica = delta #promedio o solo suma??
+				else:
+					metrica = 0.0
 			score_usuario[emocion1].append( metrica )  #cada tweet tiene una metrica
-
-	print score_usuario
 	#promediar las emociones de todos los tweet del usuario
 	for emocion in score_usuario.keys():
 		score_usuario[emocion] = np.mean(score_usuario[emocion])
