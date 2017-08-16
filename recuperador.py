@@ -71,7 +71,7 @@ csvFile.close()
 
 dicc_usuarios = open("diccionario_usuarios.txt","a") 
  
-screen_name = "asd"
+screen_name = "LifeSuckSmith"
 
 #for ides in ids:
 # formato id usuario
