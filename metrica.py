@@ -55,7 +55,7 @@ csvFile = open('resultados.csv', 'w')
 csvWriter = csv.writer(csvFile,quoting=csv.QUOTE_NONNUMERIC)
 csvWriter.writerow(["screen_name", "sadness score", "disgust score", "anger score", "surprise score", "cantidad tweets"])
 
-emociones_contrarias = [["sadness","joy"]]
+emociones_contrarias = [["sadness","joy"],["disgust","trust"],["anger","fear"],["surprise","anticipation"]]
 
 #para cada uusario dentro de la carpeta
 for historia_tweets in f: 
@@ -81,13 +81,14 @@ for historia_tweets in f:
 		#promediar por tweet (metrica)
 		for emocion1,emocion2 in emociones_contrarias:
 			if score_tweet[emocion1] == [] and score_tweet[emocion2] == []:
-				metrica = np.nan
+				metrica = 0.0
 
 			else:#no nan
 				if score_tweet[emocion1] == []: #tweet no tiene emocion1
-					score_tweet[emocion1] == [0]
+					score_tweet[emocion1] = [0.0]
+
 				if score_tweet[emocion2] == []:
-					score_tweet[emocion2] == [0]
+					score_tweet[emocion2] = [0.0]
 
 				#meter lo de la metrica
 				metrica = np.mean(score_tweet[emocion1]) - np.mean(score_tweet[emocion2]) #promedio o solo suma??
@@ -97,7 +98,7 @@ for historia_tweets in f:
 	print score_usuario
 	#promediar las emociones de todos los tweet del usuario
 	for emocion in score_usuario.keys():
-		score_usuario[emocion] = np.nanmean(score_usuario[emocion])
+		score_usuario[emocion] = np.mean(score_usuario[emocion])
 		print "Para la emocion %s tiene un score de %f"%(emocion,score_usuario[emocion])
 
 	#escribir resultado
