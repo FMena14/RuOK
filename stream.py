@@ -115,8 +115,6 @@ class listener(StreamListener):
 			print "Id usuario: ",id_user
 			print "Nombre usuario: ",json_data["user"]["screen_name"]
 			print "id tweet: ",json_data["id"]
-			print "RT count: ",json_data["retweet_count"]
-			print "Fav count: ",json_data["favorite_count"]
 			print "Fecha creacion: ",json_data["created_at"]
 			print "Text: ",json_data["text"]
 
@@ -136,6 +134,8 @@ class listener(StreamListener):
 			
 			diccionario_resultados["cantidad tweets"][id_user]+=1
 
+			#notificar
+
 			#guardar
 			diccionario_resultados.to_csv('resultados.csv', index=True, index_label= "id")
 
@@ -145,5 +145,10 @@ class listener(StreamListener):
 		print sstatus
 print "ESCUCHANDO..."
 twitterStream = Stream(auth, listener())
-#twitterStream.userstream(usuarios)
-twitterStream.filter(follow=["882289915693871104"]) #follow=
+##usuarios a streamear
+ids = open("diccionario_usuarios.txt")
+ids_usuarios = []
+for linea in ids:
+	id_user = linea.split(" ")[-1].strip()
+	ids_usuarios.append(id_user)
+twitterStream.filter(follow=ids_usuarios)
