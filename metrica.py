@@ -42,6 +42,13 @@ for indice in range(archivo.shape[0]):
 		dicc_Emolex[palabra] = [[emocion,score]]
 ##dicc emoclex creado!
 
+archivo = open("diccionario_usuarios.txt")
+dicc_user = {}
+for linea in archivo:
+	user = linea.split(" ")[0].strip()
+	ids = linea.split(" ")[-1].strip()
+	dicc_user[user] = ids
+##dicc usuario-id creado!
 
 f = []
 folder = "tweets/"
@@ -53,7 +60,7 @@ for (dirpath, dirnames, filenames) in walk(folder):
 csvFile = open('resultados.csv', 'w')
 #Use csv writer
 csvWriter = csv.writer(csvFile,quoting=csv.QUOTE_NONNUMERIC)
-csvWriter.writerow(["screen name", "sadness score", "disgust score", "anger score", "surprise score", "cantidad tweets"])
+csvWriter.writerow(["id","screen name", "sadness score", "disgust score", "anger score", "surprise score", "cantidad tweets"])
 
 emociones_contrarias = [["sadness","joy"],["disgust","trust"],["anger","fear"],["surprise","anticipation"]]
 
@@ -65,7 +72,7 @@ for historia_tweets in f:
 	historial = open(folder+historia_tweets)
 	historial = pd.read_csv(folder+historia_tweets)
 	cantidad_tweets = historial.shape[0]
-
+	
 	score_usuario = {'sadness':[],'disgust':[],'anger':[],'surprise':[]}
 	for tweet in historial["text"].values: #por cada tweet
 		#ide,fav_count,ret_count, text, created = tweet.split(',')
@@ -103,5 +110,5 @@ for historia_tweets in f:
 		print "Para la emocion %s tiene un score de %f"%(emocion,score_usuario[emocion])
 
 	#escribir resultado
-	csvWriter.writerow([screen_name, score_usuario["sadness"], score_usuario["disgust"], score_usuario["anger"], score_usuario["surprise"], cantidad_tweets])
+	csvWriter.writerow([dicc_user[screen_name],screen_name, score_usuario["sadness"], score_usuario["disgust"], score_usuario["anger"], score_usuario["surprise"], cantidad_tweets])
 csvFile.close()
