@@ -45,7 +45,7 @@ def leer_resultados():
 	nuevo_resultados = pd.DataFrame(data=diccionario)#pd.from_dict(diccionario)
 	nuevo_resultados = nuevo_resultados[['screen name', 'sadness score', 'disgust score', 'anger score', 'surprise score','cantidad tweets']]
 
-	return nuevo_resultados
+	return nuevo_resultados,aux
 
 def calcular_metrica(tweet):
 	emociones_contrarias = [["sadness","joy"],["disgust","trust"],["anger","fear"],["surprise","anticipation"]]
@@ -92,10 +92,10 @@ from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
 
 #consumer key, consumer secret, access token, access secret.
-ckey="gQ1RX1eqCRS39n1dmL9nVzAEp"
-csecret="iMiZA2xXC4o7TsypLHj22HP1R0SAdfYqxYgFDKU33mra2SGhyA"
-atoken="320425023-iyx7eywe75Po9VtkaOkhcrlhXGFTwzrYYq55xcoH"
-asecret="4GAlKtNyS0Z4SIOdo4DnlFsBl8KlfczOhGy8I4yByF1Tb"
+ckey="OfnyLSvIAMbXg31OYl0zggnua"
+csecret="BYQeUOSenSVXkWNztD1zALmuGVkLW4vmFIQ68HD5J3Lg04BdNX"
+atoken="899659689566273537-T9RkSGXCDe2DdUmzfddaIkHifKwHLjk"
+asecret="ZOQWfqd5N9HkOCt81KdHwh1xzkgE7z0IbZcCAZoz4MDB0"
 
 auth = OAuthHandler(ckey, csecret)
 auth.set_access_token(atoken, asecret)
@@ -106,20 +106,29 @@ api = tweepy.API(auth)
 class listener(StreamListener):
 
 	def on_data(self, data):
+		global ids_usuarios
 		json_data = json.loads(data)
+		try:
+			json_data["text"]
+		except:
+			#tweet de notificacion (borrar, modificar)
+			return
+
 		#print(json.dumps(json_data,indent=2))
-		if json_data["text"][:2] != "RT":
+
+		if json_data["text"][:2] != "RT" and str(json_data['user']["id"]) in ids_usuarios:
 			print "************************************NUEVO TWEET DETECTADO************************************"
 
 			id_user = json_data["user"]["id"]
 			print "Id usuario: ",id_user
-			print "Nombre usuario: ",json_data["user"]["screen_name"]
-			print "id tweet: ",json_data["id"]
+			screen_name = json_data["user"]["screen_name"]
+			print "Nombre usuario: ",screen_name
+			#print "id tweet: ",json_data["id"]
 			print "Fecha creacion: ",json_data["created_at"]
 			print "Text: ",json_data["text"]
 
 
-			diccionario_resultados = leer_resultados()
+			diccionario_resultados,resultados_df = leer_resultados()
 
 			#recalcular metrica
 			scores_tweet =  calcular_metrica(json_data["text"])
@@ -128,13 +137,40 @@ class listener(StreamListener):
 			cantidad_tweets_actual = diccionario_resultados["cantidad tweets"][id_user]
 			print "Las emociones del tweet son: "
 			for emocion,score in scores_tweet.iteritems():
-				print "%s , score: %f"%(emocion,score)
-				nuevo_valor = (diccionario_resultados[emocion+ " score"][id_user]*cantidad_tweets_actual + score) /(cantidad_tweets_actual+1)
+				print "Emocion %s , Score: %f"%(emocion,score)
+				viejo_valor = diccionario_resultados[emocion+ " score"][id_user]
+				nuevo_valor = (viejo_valor*cantidad_tweets_actual + score) /(cantidad_tweets_actual+1)
 				diccionario_resultados[emocion+ " score"][id_user] = nuevo_valor
 			
-			diccionario_resultados["cantidad tweets"][id_user]+=1
 
-			#notificar
+				#valores treshold
+				promedio = np.mean(resultados_df[emocion+" score"])
+				std = np.std(resultados_df[emocion+" score"])
+
+				#verificando
+				#print "VERIFICANDO %s"%(emocion)
+				#print "PROMEDIO DEL GRUPO: ",promedio
+				#print "STD DEL GRUPO: ",std
+				#print "SCORE del tweet: ",score
+				#print "NUEVO SCORE PROMEDIO: ",	nuevo_valor
+
+				#notificar
+				if nuevo_valor > promedio + 2*std:
+					print "----->NOTIFICAR EN BASE AL HISTORIAL DE LA EMOCION %s PARA ESE USUARIO"%(emocion)
+					try:
+						api.send_direct_message(user=id_user,text="Hi %s,\nEverything is right?, We are seeing your tweets and is seems to like you are a bit %s.\nFor any help you need, please contact us contacto.ruok@gmail.com\n\nRuOK~"%(screen_name,emocion))
+					except:
+						#no se puede mandar ya que no te siguen
+						pass
+				"""
+				if nuevo_valor > viejo_valor: 
+					print "----->NOTIFICAR EN BASE AL TWEET ACTUAL DE LA EMOCION %s"%(emocion)
+					try:
+						api.send_direct_message(user=id_user,text="Hi %s,\nEverything is right?, We see your last tweet and is seems to like you are a bit %s.\nFor any help you need, please contact us contacto.ruok@gmail.com\n\nRuOK~"%(screen_name,emocion))
+					except:
+						pass
+				"""
+			diccionario_resultados["cantidad tweets"][id_user]+=1
 
 			#guardar
 			diccionario_resultados.to_csv('resultados.csv', index=True, index_label= "id")
@@ -142,7 +178,7 @@ class listener(StreamListener):
 		return(True)
 
 	def on_error(self, status):
-		print sstatus
+		print status
 print "ESCUCHANDO..."
 twitterStream = Stream(auth, listener())
 ##usuarios a streamear
